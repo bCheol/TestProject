@@ -131,8 +131,8 @@ public class AdapterImg extends RecyclerView.Adapter<AdapterImg.ViewHolder> impl
         uriArrayList.remove(position);
     }
 
-    public int hold() {
-        return uriArrayList.indexOf(Uri.parse("drawable/img_camera.png"));
+    public ArrayList backList() {
+        return uriArrayList;
     }
 
     //이미지 추가 리스너

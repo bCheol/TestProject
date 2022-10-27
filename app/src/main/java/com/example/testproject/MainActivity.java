@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -67,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
                 //정보전달
 
                 //서비스 실행
+                Intent intent = new Intent(getApplicationContext(), MyService.class);
+                intent.putExtra("list", adapterImg.backList());
+                startActivity(intent);
+
+          //      finish();
 
             }
         });
@@ -324,6 +332,9 @@ public class MainActivity extends AppCompatActivity {
 
                             } else {
                                 for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
+
+                                    Log.d("test", getFileName(result.getData().getClipData().getItemAt(i).getUri()));
+                                    Log.d("test", String.valueOf(result.getData().getClipData().getItemAt(i).getUri()));
                                     adapterImg.addUri(result.getData().getClipData().getItemAt(i).getUri());
                                 }
                             }
@@ -375,4 +386,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+
+    @SuppressLint("Range")
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getLastPathSegment();
+        }
+        return result;
+    }
 }
